@@ -1,0 +1,126 @@
+#include <LiquidCrystal_I2C.h>     
+#include <Keypad.h>
+int a=0, b=0, c=0, d=0;//acumuladores de datos enteros para la contrseña.
+int var=0; //incremento apara el switch.
+int C1=7,C2=5,C3=3,C4=2;//contraseña
+char f='*';  //caracter para cubrir la contraseña.
+
+
+const byte filas = 4; //cuatro  filas.
+const byte columnas = 3; //3 columnas.
+
+char tecla[filas][columnas] = {
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'},
+  {'*','0','#'}
+};
+byte pinFilas[filas] = {6, 7, 8, 9}; //conectarse a las patillas de salida de fila del teclado.
+byte pinColumnas[columnas] = {10, 11, 12 }; //conectarse a las patillas de las columnas del teclado.
+
+Keypad keypad = Keypad( makeKeymap(tecla), pinFilas, pinColumnas, filas, columnas );
+LiquidCrystal_I2C lcd(0x27,16,2); 
+void setup(){
+  lcd.begin(); //LCD de 16 COLUMNAS Y 2 FILAS
+  
+  pinMode(4,OUTPUT); // CORRECTO LED GREEN.
+  pinMode(3,OUTPUT); // INCORRECTO LED RED.
+  pinMode(2,INPUT_PULLUP); //SUICHE
+}
+  
+void loop(){
+  
+  char key = keypad.getKey();
+  int suiche=digitalRead(2);
+  
+  
+  if(suiche ==LOW)
+  
+  {
+  if (key){
+    
+   lcd.setCursor(5+var,1);
+   lcd.print(key),lcd.setCursor(5+var,1),lcd.print(f);//imprimimos el caracter * en el lcd
+   key=key-48; //COVERCIÓN DE CHAR A ENTEROS -48 SEGUN EL CÓDIGO ASCII.
+   var++; //var se incrementa para los case1,case2,case3,case4.
+   
+   switch(var){
+    case 1:
+    a=key; //almacenamos primer dígito para la contraseña que seria el 7
+    break;
+    case 2:
+    b=key; //almacenamos segundo dígito para la contraseña que seria el 5
+    break;
+    case 3:
+    c=key; //almacenamos tercer dígito para la contraseña que seria el 3
+    break;
+    case 4:
+    d=key; //almacenamos cuarto dígito para la contraseña que seria el 2
+   delay(100);
+  if(a==C1 && b==C2 && c==C3 && d==C4){ //Si la contraseña es correcta muestre mensaje de bienvenida y encienda led verde, de lo contrario salte el mensaje de intruso y active botón rojo
+    lcd.clear();
+    lcd.setCursor(3,0);
+    lcd.print("BIENVENIDO");
+    digitalWrite(4,HIGH);
+    digitalWrite(3,LOW);
+    }
+  else{
+    lcd.clear();
+    lcd.setCursor(3,0);
+    lcd.print("INTRUSO");
+    digitalWrite(3,HIGH);
+    digitalWrite(4,LOW);
+    }
+
+  break;//se  termina 
+   }
+  }
+
+ }
+
+
+ //////////////////////////////////////////////////////////////////////////////
+
+ if(suiche ==HIGH)
+  
+  {
+  if (key){
+    
+   lcd.setCursor(5+var,1);
+   lcd.print(key),lcd.setCursor(5+var,1),lcd.print(f);//imprimimos el caracter * en el lcd
+   key=key-48; //COVERCIÓN DE CHAR A ENTEROS -48 SEGUN EL CÓDIGO ASCII.
+   var++; //var se incrementa para los case1,case2,case3,case4.
+   
+   switch(var){
+    case 1:
+    a=key; //almacenamos primer dígito para la contraseña que seria el 7
+    break;
+    case 2:
+    b=key; //almacenamos segundo dígito para la contraseña que seria el 5
+    break;
+    case 3:
+    c=key; //almacenamos tercer dígito para la contraseña que seria el 3
+    break;
+    case 4:
+    d=key; //almacenamos cuarto dígito para la contraseña que seria el 2
+   delay(100);
+  if(a==C1 && b==C2 && c==C3 && d==C4){ //Si la contraseña es correcta muestre mensaje de bienvenida y encienda led verde, de lo contrario salte el mensaje de intruso y active botón rojo
+    lcd.clear();
+    lcd.setCursor(3,0);
+    lcd.print("SISTEMA SEGURO");
+    digitalWrite(4,LOW);
+    digitalWrite(3,LOW);
+    }
+ 
+
+  break;//se  termina 
+   }
+  }
+
+ }
+ 
+
+ if(!key){lcd.setCursor(0,0),lcd.print("Digitar Clave");}//portada de inicio en el LCD
+
+  delay(2);
+}
